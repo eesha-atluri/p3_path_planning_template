@@ -51,7 +51,9 @@ std::vector<float> getEdgeCosts(int n, Graph& g)
 int getParent(int n, Graph& g)
 {
     // *** Task: Implement this function *** //
-    return g.parent[n];
+    if (n>=0 && n< g.nodes.size()) {
+        return g.nodes[n].parent;
+    }
     return -1;
 
     // *** End student code *** //
@@ -76,32 +78,37 @@ std::vector<int> bfs(int start, int goal, Graph& g)
     std::queue<int> visit_queue;
 
     // *** Task: Implement this function *** //
+   
+    g.nodes[start].visited = true;
     visit_queue.push(start);
-    g.visited[start] = true;
-    while(!visit_queue.empty()) {
+
+    while (!visit_queue.empty()) {
         int curr = visit_queue.front();
         visit_queue.pop();
 
         if (curr == goal) {
-            for (int t = goal; t != -1; t = g.parent[t]) {
-                path.push_back(t);
+            int at = goal;
+            while (at != -1) {
+                path.push_back(at); 
+                at = g.nodes[at].parent;
             }
-            std::reverse(path.begin(), path.end());
+            std::reverse(path.begin(), path.end()); 
             return path;
         }
+
         for (int neighbor : g.edges[curr]) {
-            if (!g.visited[neighbor]) {
-                g.visited[neighbor] = true;
-                g.parent[neighbor] = curr;
-                visit_queue.push(neighbor);
+            if (!g.nodes[neighbor].visited) {
+                g.nodes[neighbor].visited = true; 
+                g.nodes[neighbor].parent = curr; 
+                visit_queue.push(neighbor); 
             }
         }
     }
-
     // *** End student code *** //
 
     return path;
 }
+
 
 std::vector<int> dfs(int start, int goal, Graph& g)
 {
@@ -111,28 +118,6 @@ std::vector<int> dfs(int start, int goal, Graph& g)
     std::stack<int> visit_stack;
 
     // *** Task: Implement this function if completing the advanced extension *** //
-    g.visited[start] = true;
-    while (!visit_stack.empty()) {
-            int curr = visit_stack.top();
-            visit_stack.pop();
-
-            if (curr == goal) {
-                // Trace the path from goal to start
-                for (int t = goal; t != -1; t = g.parent[t]) {
-                    path.push_back(t);
-                }
-                std::reverse(path.begin(), path.end());
-                return path;
-            }
-
-            for (int neighbor : g.edges[curr]) {
-                if (!g.visited[neighbor]) {
-                    g.visited[neighbor] = true;
-                    g.parent[neighbor] = curr;
-                    visit_stack.push(neighbor);
-                }
-            }
-        }
 
     // *** End student code *** //
 

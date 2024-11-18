@@ -80,6 +80,9 @@ std::string mapAsString(GridGraph& graph)
 void initGraph(GridGraph& graph)
 {
     // *** Task: Initialize any variables YOU added to the GridGraph *** //
+    
+    
+   
 
     // *** End student code *** //
 }
@@ -142,6 +145,20 @@ bool isCellOccupied(int i, int j, const GridGraph& graph)
 std::vector<int> findNeighbors(int idx, const GridGraph& graph)
 {
     // *** Task: Implement this function *** //
+    Cell cell = idxToCell(idx, graph);
+    std::vector<int> neighbor;
+
+    std::vector<std::pair<int,int>> offsets = {
+        {-1,-1}, {-1,0}, {-1,1}, {0,-1}, {0,0}, {0,1}, {1,-1}, {1,0}, {1,1}
+    };
+    for (auto[di,dj]:offsets) {
+        int ni = cell.i + di;
+        int nj = cell.j + dj;
+        if (isCellInBounds(ni,nj,graph)) {
+            neighbor.push_back(cellToIdx(ni,nj,graph));
+        }
+    }
+    return neighbor;
 
     /**
      * NOTE: Be sure the neighbors are returned in the following order:
@@ -212,7 +229,7 @@ bool checkCollision(int idx, const GridGraph& graph)
 int getParent(int idx, const GridGraph& graph)
 {
     // *** Task: Implement this function *** //
-    
+
     return 0;
 
     // *** End student code *** //
