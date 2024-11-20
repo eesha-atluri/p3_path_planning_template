@@ -24,9 +24,15 @@ struct CellNode
     // *** Task: Add variables necessary for running your search algorithms *** //
     int x;
     int y;
-    bool visited;
-    int parent;
+    
+    int parent = -1;
     int occupancy;
+    bool visited = false;
+  
+    float distance = std::numeric_limits<float>::infinity();
+    CellNode(int x_coord = 0, int y_coord = 0, int occ = 0)
+        : x(x_coord), y(y_coord), occupancy(occ), parent(-1), visited(false), distance(std::numeric_limits<float>::infinity()) {}
+
 
     // *** End student code *** //
 };
@@ -36,6 +42,8 @@ struct CellNode
  */
 struct GridGraph
 {
+    std::vector<CellNode> cell_nodes;
+
     GridGraph() :
         width(-1),
         height(-1),
@@ -44,6 +52,7 @@ struct GridGraph
         meters_per_cell(0),
         collision_radius(0.15),
         threshold(-100)  // TODO: Adjust threshold.
+    
     {
     };
 
@@ -59,16 +68,8 @@ struct GridGraph
     std::vector<float> obstacle_distances;  // The distance from each cell to the nearest obstacle.
 
     std::vector<Cell> visited_cells;        // A list of visited cells. Used for visualization.
-    std::vector<CellNode> cell_nodes;
 
     // *** Task: Add any variable(s) necessary to associate CellNodes with each Cell in the GridGraph *** //
- struct CellNode {
-    int x;
-    int y;
-    int occupancy;
-    int parents;
-    bool visited;
- };
 
     // *** End student code *** //
 };

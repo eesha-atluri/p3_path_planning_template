@@ -6,6 +6,9 @@
 
 #include <path_planning/utils/math_helpers.h>
 #include <path_planning/utils/graph_utils.h>
+#include <vector>
+#include <cmath>
+#include <limits>
 
 
 bool isLoaded(const GridGraph& graph)
@@ -81,16 +84,30 @@ void initGraph(GridGraph& graph)
 {
     // *** Task: Initialize any variables YOU added to the GridGraph *** //
     
-    
+    int num_cells = graph.width * graph.height;
+
+    graph.cell_nodes.resize(num_cells);
+
+    for (int idx = 0; idx < num_cells; ++idx) {
+        CellNode& node = graph.cell_nodes[idx];
+        node.x = idx % graph.width;          
+        node.y = idx / graph.width;    
+        node.parent = -1;                     
+        node.occupancy = graph.cell_odds[idx]; 
+        node.visited = false;                 
+        node.distance = std::numeric_limits<float>::infinity(); // Infinite distance
+
+
    
 
     // *** End student code *** //
+}
 }
 
 
 int cellToIdx(int i, int j, const GridGraph& graph)
 {
-    return i + j * graph.width;
+     return i * graph.width + j;
 }
 
 
@@ -126,7 +143,7 @@ std::vector<float> cellToPos(int i, int j, const GridGraph& graph)
 
 bool isCellInBounds(int i, int j, const GridGraph& graph)
 {
-    return i >= 0 && j >= 0 && i < graph.width && j < graph.height;
+   return (i >= 0 && i < graph.height && j >= 0 && j < graph.width);
 }
 
 
@@ -144,21 +161,34 @@ bool isCellOccupied(int i, int j, const GridGraph& graph)
 
 std::vector<int> findNeighbors(int idx, const GridGraph& graph)
 {
-    // *** Task: Implement this function *** //
-    Cell cell = idxToCell(idx, graph);
-    std::vector<int> neighbor;
 
-    std::vector<std::pair<int,int>> offsets = {
-        {-1,-1}, {-1,0}, {-1,1}, {0,-1}, {0,0}, {0,1}, {1,-1}, {1,0}, {1,1}
+    std::vector<int> neighbors;
+
+    Cell current = idxToCell(idx, graph);
+
+       const std::vector<std::pair<int, int>> offsets = {
+        {-1, -1}, {-1,  0}, {-1,  1}, 
+        { 0, -1}, { 0,  1}, 
+        { 1, -1}, { 1,  0}, { 1,  1}  
     };
-    for (auto[di,dj]:offsets) {
-        int ni = cell.i + di;
-        int nj = cell.j + dj;
-        if (isCellInBounds(ni,nj,graph)) {
-            neighbor.push_back(cellToIdx(ni,nj,graph));
+
+    for (const auto& [di, dj] : offsets) {
+        int ni = current.i + di; 
+        int nj = current.j + dj; 
+
+        if (isCellInBounds(ni, nj, graph)) {
+            int neighborIdx = cellToIdx(ni, nj, graph);
+            if (!isIdxOccupied(neighborIdx, graph)) {
+                neighbors.push_back(neighborIdx);
+            }
         }
+
+
     }
-    return neighbor;
+
+
+    return neighbors;
+   
 
     /**
      * NOTE: Be sure the neighbors are returned in the following order:
@@ -176,11 +206,10 @@ std::vector<int> findNeighbors(int idx, const GridGraph& graph)
      * This will be necessary to pass the test cases.
      */
 
-    std::vector<int> neighbors = std::vector<int>();
-    return neighbors;
+   
 
     // *** End student code *** //
-}   
+}  
 
 
 bool checkCollisionFast(int idx, const GridGraph& graph)
@@ -229,8 +258,8 @@ bool checkCollision(int idx, const GridGraph& graph)
 int getParent(int idx, const GridGraph& graph)
 {
     // *** Task: Implement this function *** //
-
-    return 0;
+    return graph.cell_nodes[idx].parent;
+    
 
     // *** End student code *** //
 }

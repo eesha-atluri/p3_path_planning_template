@@ -7,6 +7,8 @@
 #include <path_planning/utils/graph_utils.h>
 
 #include <path_planning/graph_search/graph_search.h>
+#include <queue>
+#include <vector>
 
 /**
  * General graph search instructions:
@@ -54,11 +56,38 @@ std::vector<Cell> breadthFirstSearch(GridGraph &graph, const Cell &start, const 
 
     int start_idx = cellToIdx(start.i, start.j, graph);
 
-    // *** Task: Implement this function *** //
+     int goal_idx = cellToIdx(goal.i, goal.j, graph);
 
+    if (checkCollision(start_idx, graph) || checkCollision(goal_idx, graph)) {
+        return path; 
+    }
+
+    std::queue<int> frontier;
+    frontier.push(start_idx);
+    graph.cell_nodes[start_idx].visited = true;
+    graph.cell_nodes[start_idx].distance = 0; 
+
+    while (!frontier.empty()) {
+        int current_idx = frontier.front();
+        frontier.pop();
+
+        if (current_idx == goal_idx) {
+            path = tracePath(goal_idx, graph);
+            return path;
+        }
+
+        for (int neighbor_idx : findNeighbors(current_idx, graph)) {
+            if (!graph.cell_nodes[neighbor_idx].visited) {
+                graph.cell_nodes[neighbor_idx].visited = true;
+                graph.cell_nodes[neighbor_idx].parent = current_idx;
+                graph.cell_nodes[neighbor_idx].distance = graph.cell_nodes[current_idx].distance + 1;
+                frontier.push(neighbor_idx);
+            }
+        }
+    }
     // *** End student code *** //
 
-    return path;
+   return path;
 }
 
 std::vector<Cell> iterativeDeepeningSearch(GridGraph &graph, const Cell &start, const Cell &goal)

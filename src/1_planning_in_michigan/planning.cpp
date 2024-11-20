@@ -7,6 +7,10 @@
 #include <algorithm>
 
 #include "planning.h"
+#include "/Users/eeshaatluri/p3_path_planning_template/include/path_planning/utils/graph_utils.h"
+
+#include <queue>
+#include <vector>
 
 
 void printPath(std::vector<int>& path, Graph& g) {
@@ -54,7 +58,9 @@ int getParent(int n, Graph& g)
     if (n>=0 && n< g.nodes.size()) {
         return g.nodes[n].parent;
     }
-    return -1;
+    else { 
+        return -1;
+    }
 
     // *** End student code *** //
 }
@@ -62,48 +68,51 @@ int getParent(int n, Graph& g)
 void initGraph(Graph& g)
 {
     g.nodes.clear();
-    for (int i = 0; i < g.data.size(); i++)
-    {
+
+    // Iterate over each node in the graph's data
+    for (size_t i = 0; i < g.data.size(); ++i) {
+        // Create a new node with default values
         Node n;
-        n.city = g.data[i];
+        n.city = g.data[i];  // Assign the node's name
+        n.visited = false;   // Mark the node as unvisited
+        n.parent = -1;       // Set the parent to -1 (no parent)
+
+        // Add the node to the graph's nodes vector
         g.nodes.push_back(n);
     }
 }
 
-std::vector<int> bfs(int start, int goal, Graph& g)
-{
+std::vector<int> bfs(int start, int goal, Graph& g) {
+    std::queue<int> frontier;  
+    std::vector<int> path;     
+
     initGraph(g);
-    std::vector<int> path;
 
-    std::queue<int> visit_queue;
-
-    // *** Task: Implement this function *** //
-   
+    frontier.push(start);
     g.nodes[start].visited = true;
-    visit_queue.push(start);
 
-    while (!visit_queue.empty()) {
-        int curr = visit_queue.front();
-        visit_queue.pop();
+    while (!frontier.empty()) {
+        int current = frontier.front(); 
+        frontier.pop();                
 
-        if (curr == goal) {
-            int at = goal;
-            while (at != -1) {
-                path.push_back(at); 
-                at = g.nodes[at].parent;
+        if (current == goal) {
+            int node = goal;
+            while (node != -1) {      
+                path.push_back(node);
+                node = g.nodes[node].parent;
             }
             std::reverse(path.begin(), path.end()); 
             return path;
         }
 
-        for (int neighbor : g.edges[curr]) {
-            if (!g.nodes[neighbor].visited) {
-                g.nodes[neighbor].visited = true; 
-                g.nodes[neighbor].parent = curr; 
-                visit_queue.push(neighbor); 
+        for (int neighbor : g.edges[current]) {
+            if (!g.nodes[neighbor].visited) {      
+                g.nodes[neighbor].visited = true;  
+                g.nodes[neighbor].parent = current; 
+                frontier.push(neighbor);          
             }
         }
-    }
+    } 
     // *** End student code *** //
 
     return path;
