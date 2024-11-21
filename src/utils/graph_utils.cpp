@@ -83,6 +83,8 @@ std::string mapAsString(GridGraph& graph)
 void initGraph(GridGraph& graph)
 {
     // *** Task: Initialize any variables YOU added to the GridGraph *** //
+    graph.visited_cells.clear();
+    graph.cell_nodes.clear();
     
     int num_cells = graph.width * graph.height;
 
@@ -166,30 +168,21 @@ std::vector<int> findNeighbors(int idx, const GridGraph& graph)
 
     Cell current = idxToCell(idx, graph);
 
-       const std::vector<std::pair<int, int>> offsets = {
-        {-1, -1}, {-1,  0}, {-1,  1}, 
-        { 0, -1}, { 0,  1}, 
-        { 1, -1}, { 1,  0}, { 1,  1}  
-    };
+    for (int di = -1; di <= 1; ++di) {
+        for (int dj = -1; dj <= 1; ++dj) {
+            int ni = current.i + di; 
+            int nj = current.j + dj; 
 
-    for (const auto& [di, dj] : offsets) {
-        int ni = current.i + di; 
-        int nj = current.j + dj; 
+        
 
-        if (isCellInBounds(ni, nj, graph)) {
-            int neighborIdx = cellToIdx(ni, nj, graph);
-            if (!isIdxOccupied(neighborIdx, graph)) {
+            if (isCellInBounds(ni, nj, graph)) {
+                int neighborIdx = cellToIdx(ni, nj, graph);
                 neighbors.push_back(neighborIdx);
             }
         }
-
-
     }
-
-
     return neighbors;
    
-
     /**
      * NOTE: Be sure the neighbors are returned in the following order:
      * 
