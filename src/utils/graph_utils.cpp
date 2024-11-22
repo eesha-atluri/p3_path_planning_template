@@ -168,19 +168,30 @@ std::vector<int> findNeighbors(int idx, const GridGraph& graph)
 
     Cell current = idxToCell(idx, graph);
 
-    for (int di = -1; di <= 1; ++di) {
-        for (int dj = -1; dj <= 1; ++dj) {
-            int ni = current.i + di; 
-            int nj = current.j + dj; 
+    // std::cout << current.i << "  " << current.j << std::endl;
 
-        
+    for (int dj = current.j-1; dj <= current.j + 1; dj++) {
+        for (int di = current.i-1; di <= current.i+1; di++) {
+            if (di!=current.i || dj!=current.j) {
+            // int ni = current.i + di; 
+            // int nj = current.j + dj;
 
-            if (isCellInBounds(ni, nj, graph)) {
-                int neighborIdx = cellToIdx(ni, nj, graph);
-                neighbors.push_back(neighborIdx);
+            //  std::cout << isCellInBounds(ni, nj, graph) << std::endl;
+
+            // std::cout << isIdxOccupied(cellToIdx(di, dj, graph), graph) << std::endl;
+            
+            // std::cout << di << "  " << dj << "  " << graph.height << "   " << graph.width << std::endl;
+
+                if (isCellInBounds(di, dj, graph)) {
+                    int neighborIdx = cellToIdx(di, dj, graph);
+                    neighbors.push_back(neighborIdx);
+                    // neighbors.push_back(cellToIdx(ni, nj, graph));
+
+                }
             }
         }
     }
+  
     return neighbors;
    
     /**

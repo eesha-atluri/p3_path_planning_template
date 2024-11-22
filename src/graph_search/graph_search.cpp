@@ -50,37 +50,45 @@ std::vector<Cell> depthFirstSearch(GridGraph &graph, const Cell &start, const Ce
 
 std::vector<Cell> breadthFirstSearch(GridGraph &graph, const Cell &start, const Cell &goal)
 {
-    std::vector<Cell> path; // The final path should be placed here.
+    std::vector<Cell> path; 
 
-    initGraph(graph); // Make sure all the node values are reset.
+    initGraph(graph); 
 
     int start_idx = cellToIdx(start.i, start.j, graph);
+    int goal_idx = cellToIdx(goal.i, goal.j, graph);
 
-     int goal_idx = cellToIdx(goal.i, goal.j, graph);
-
-    if (checkCollision(start_idx, graph) || checkCollision(goal_idx, graph)) {
+    if (isCellOccupied(start.i, start.j, graph) || isCellOccupied(goal.i, goal.j, graph)) {
         return path; 
     }
 
-    std::queue<int> frontier;
+    std::queue<int> frontier; 
     frontier.push(start_idx);
+
     graph.cell_nodes[start_idx].visited = true;
-    graph.cell_nodes[start_idx].distance = 0; 
 
     while (!frontier.empty()) {
         int current_idx = frontier.front();
         frontier.pop();
 
         if (current_idx == goal_idx) {
-            path = tracePath(goal_idx, graph);
-            return path;
+            path = tracePath(current_idx, graph);
+            return path; 
         }
+
+        Cell current_cell = idxToCell(current_idx, graph);
 
         for (int neighbor_idx : findNeighbors(current_idx, graph)) {
             if (!graph.cell_nodes[neighbor_idx].visited) {
                 graph.cell_nodes[neighbor_idx].visited = true;
                 graph.cell_nodes[neighbor_idx].parent = current_idx;
-                graph.cell_nodes[neighbor_idx].distance = graph.cell_nodes[current_idx].distance + 1;
+
+                Cell neighbor_cell = idxToCell(neighbor_idx, graph);
+                float dx = neighbor_cell.i - goal.i;
+                float dy = neighbor_cell.j - goal.j;
+                float distance_to_goal = std::sqrt(dx * dx + dy * dy);
+
+                graph.cell_nodes[neighbor_idx].distance = distance_to_goal;
+
                 frontier.push(neighbor_idx);
             }
         }
