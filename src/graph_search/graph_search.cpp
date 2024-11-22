@@ -57,39 +57,41 @@ std::vector<Cell> breadthFirstSearch(GridGraph &graph, const Cell &start, const 
     int start_idx = cellToIdx(start.i, start.j, graph);
     int goal_idx = cellToIdx(goal.i, goal.j, graph);
 
-    if (isCellOccupied(start.i, start.j, graph) || isCellOccupied(goal.i, goal.j, graph)) {
-        return path; 
-    }
+    
 
-    std::queue<int> frontier; 
-    frontier.push(start_idx);
+    std::queue<int> q; 
+    q.push(start_idx);
 
     graph.cell_nodes[start_idx].visited = true;
 
-    while (!frontier.empty()) {
-        int current_idx = frontier.front();
-        frontier.pop();
+    while (!q.empty()) {
+        int current_idx = q.front();
+        graph.cell_nodes[current_idx].visited = true;
+        q.pop();
 
         if (current_idx == goal_idx) {
             path = tracePath(current_idx, graph);
             return path; 
+            break;
         }
 
         Cell current_cell = idxToCell(current_idx, graph);
-
-        for (int neighbor_idx : findNeighbors(current_idx, graph)) {
-            if (!graph.cell_nodes[neighbor_idx].visited) {
-                graph.cell_nodes[neighbor_idx].visited = true;
-                graph.cell_nodes[neighbor_idx].parent = current_idx;
-
-                Cell neighbor_cell = idxToCell(neighbor_idx, graph);
+        std::vector<int> neighbor_idx = findNeighbors(current_idx, graph);
+        for (int x = 0; x<neighbor_idx.size(); x++) {
+            if (!graph.cell_nodes[neighbor_idx[x]].visited) { //consider if the cell is occupied and consider if the cell is already in the visit queue
+                graph.cell_nodes[neighbor_idx[x]].visited = true; //mark that its been added to the queue
+                q.push(neighbor_idx[x]);
+                
+                Cell neighbor_cell = idxToCell(neighbor_idx[x], graph);
                 float dx = neighbor_cell.i - goal.i;
                 float dy = neighbor_cell.j - goal.j;
-                float distance_to_goal = std::sqrt(dx * dx + dy * dy);
+                float distance_to_goal = std::sqrt(dx * dx + dy * dy); // only update distance and parent if the distance would be smaller
 
-                graph.cell_nodes[neighbor_idx].distance = distance_to_goal;
+                graph.cell_nodes[neighbor_idx[x]].distance = distance_to_goal;
+                graph.cell_nodes[neighbor_idx[x]].parent = current_idx;
 
-                frontier.push(neighbor_idx);
+
+                
             }
         }
     }
