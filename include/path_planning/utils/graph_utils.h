@@ -28,6 +28,7 @@ struct CellNode
     int parent = -1;
     int occupancy;
     bool visited = false;
+    bool queued;
   
     float distance = std::numeric_limits<float>::infinity();
     CellNode(int x_coord = 0, int y_coord = 0, int occ = 0)

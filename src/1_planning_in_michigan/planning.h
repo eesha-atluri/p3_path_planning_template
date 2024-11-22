@@ -18,7 +18,10 @@ struct Node
 {
     std::string city;
     bool visited = false;
+    float distance;
     int parent = -1;
+    bool queued;
+
     
     // *** Task: Add variables necessary for running your search algorithms *** //
 

@@ -58,11 +58,10 @@ std::vector<Cell> breadthFirstSearch(GridGraph &graph, const Cell &start, const 
     int goal_idx = cellToIdx(goal.i, goal.j, graph);
 
     
-
     std::queue<int> q; 
     q.push(start_idx);
 
-    graph.cell_nodes[start_idx].visited = true;
+    graph.cell_nodes[start_idx].visited = false;
 
     while (!q.empty()) {
         int current_idx = q.front();

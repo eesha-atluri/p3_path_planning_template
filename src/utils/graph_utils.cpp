@@ -83,27 +83,18 @@ std::string mapAsString(GridGraph& graph)
 void initGraph(GridGraph& graph)
 {
     // *** Task: Initialize any variables YOU added to the GridGraph *** //
-    graph.visited_cells.clear();
-    graph.cell_nodes.clear();
-    
-    int num_cells = graph.width * graph.height;
-
-    graph.cell_nodes.resize(num_cells);
-
-    for (int idx = 0; idx < num_cells; ++idx) {
-        CellNode& node = graph.cell_nodes[idx];
-        node.x = idx % graph.width;          
-        node.y = idx / graph.width;    
-        node.parent = -1;                     
-        node.occupancy = graph.cell_odds[idx]; 
-        node.visited = false;                 
-        node.distance = std::numeric_limits<float>::infinity(); // Infinite distance
-
-
+   graph.cell_nodes.clear();
+    int cellnum = graph.width *graph.height;
+    for (int i = 0; i < cellnum; i++){
+        CellNode n;
+        n.distance = 1000000000000;
+        n.parent = -1;
+        n.visited = false;
+        graph.cell_nodes.push_back(n);
+    }
    
 
     // *** End student code *** //
-}
 }
 
 
