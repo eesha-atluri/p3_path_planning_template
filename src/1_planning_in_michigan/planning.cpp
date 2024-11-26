@@ -7,7 +7,6 @@
 #include <algorithm>
 
 #include "planning.h"
-#include "/Users/eeshaatluri/p3_path_planning_template/include/path_planning/utils/graph_utils.h"
 
 #include <queue>
 #include <vector>
