@@ -50,47 +50,50 @@ std::vector<Cell> depthFirstSearch(GridGraph &graph, const Cell &start, const Ce
 
 std::vector<Cell> breadthFirstSearch(GridGraph &graph, const Cell &start, const Cell &goal)
 {
-    std::vector<Cell> path; 
-
-    initGraph(graph); 
-
+    initGraph(graph); // Make sure all the node values are reset.
+    std::vector<Cell> path; // The final path should be placed here.
     int start_idx = cellToIdx(start.i, start.j, graph);
+
+    int curr = start_idx;
+    std::queue<int> visit_queue;
+
+    visit_queue.push(start_idx);
+    graph.cell_nodes[start_idx].visited = false;
+    graph.cell_nodes[start_idx].queued = false;
+    graph.cell_nodes[start_idx].distance = 0;
+    graph.cell_nodes[start_idx].parent = -1;
+
     int goal_idx = cellToIdx(goal.i, goal.j, graph);
 
-    
-    std::queue<int> q; 
-    q.push(start_idx);
+    while(visit_queue.size() > 0){
+        curr = visit_queue.front();
+        graph.cell_nodes[curr].visited = true;
+        visit_queue.pop();
 
-    graph.cell_nodes[start_idx].visited = false;
+        
+        if (curr == goal_idx){
+            path = tracePath(curr, graph);
 
-    while (!q.empty()) {
-        int current_idx = q.front();
-        graph.cell_nodes[current_idx].visited = true;
-        q.pop();
-
-        if (current_idx == goal_idx) {
-            path = tracePath(current_idx, graph);
-            return path; 
-            break;
+            return path;
         }
+        
 
-        Cell current_cell = idxToCell(current_idx, graph);
-        std::vector<int> neighbor_idx = findNeighbors(current_idx, graph);
-        for (int x = 0; x<neighbor_idx.size(); x++) {
-            if (!graph.cell_nodes[neighbor_idx[x]].visited) { //consider if the cell is occupied and consider if the cell is already in the visit queue
-                graph.cell_nodes[neighbor_idx[x]].visited = true; //mark that its been added to the queue
-                q.push(neighbor_idx[x]);
-                
-                Cell neighbor_cell = idxToCell(neighbor_idx[x], graph);
-                float dx = neighbor_cell.i - goal.i;
-                float dy = neighbor_cell.j - goal.j;
-                float distance_to_goal = std::sqrt(dx * dx + dy * dy); // only update distance and parent if the distance would be smaller
+        std::vector<int> neighbors = findNeighbors(curr, graph);
 
-                graph.cell_nodes[neighbor_idx[x]].distance = distance_to_goal;
-                graph.cell_nodes[neighbor_idx[x]].parent = current_idx;
+        for (int i = 0; i < neighbors.size(); i++){
+            int neighbor = neighbors[i];
 
+            if ((graph.cell_nodes[neighbors[i]].queued == false) && (graph.cell_nodes[neighbors[i]].visited == false) && (checkCollision(neighbors[i], graph) == false)){
+                visit_queue.push(neighbors[i]);
+                graph.cell_nodes[neighbor].queued = true;
+            }
 
-                
+            Cell neighbor_coordinates = idxToCell(neighbor, graph);
+            Cell current_coordinates = idxToCell(curr, graph);
+            int edge_cost  = sqrt(pow(neighbor_coordinates.i - current_coordinates.i, 2) + pow(neighbor_coordinates.j - current_coordinates.j, 2));
+            if ((graph.cell_nodes[curr].distance + edge_cost) < (graph.cell_nodes[neighbors[i]].distance)){
+                graph.cell_nodes[neighbors[i]].distance = graph.cell_nodes[curr].distance + edge_cost;
+                graph.cell_nodes[neighbors[i]].parent = curr;
             }
         }
     }
